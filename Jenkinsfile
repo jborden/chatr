@@ -49,16 +49,18 @@ node {
   }
 
   stage('Test') {
-    try {
-      // sh 'scripts/install-flyway'
-      withCredentials( // [string(credentialsId: 'S3_ACCESS_KEY',
-                       //         variable:      'S3_ACCESS_KEY'),
-                       //  string(credentialsId: 'S3_SECRET_KEY',
-                       //         variable:      'S3_SECRET_KEY'),
-                       //  string(credentialsId: 'S3_ENDPOINT',
-                       //         variable:      'S3_ENDPOINT'),
-                       //  string(credentialsId: 'SYSREV_DEV_KEY',
-                       //         variable:      'SYSREV_DEV_KEY')]
+	try {
+	    echo "before withCredentials"
+	    // sh 'scripts/install-flyway'
+	    withCredentials( [string(credentialsId: 'chatr_deploy_user',
+				     variable:      'chatr_deploy_user'),
+                        // string(credentialsId: 'S3_SECRET_KEY',
+                        //        variable:      'S3_SECRET_KEY'),
+                        // string(credentialsId: 'S3_ENDPOINT',
+                        //        variable:      'S3_ENDPOINT'),
+                        // string(credentialsId: 'SYSREV_DEV_KEY',
+                        //        variable:      'SYSREV_DEV_KEY')
+		]
 	    ) {
         withEnv( // ['DB_NAME=datasource_test',
                  //  'DB_HOST=localhost',
@@ -66,6 +68,7 @@ node {
                  //  'DB_PASSWORD=""',
                  //  'DB_USER=postgres']
 		) {
+		    echo "In Test"
           sh 'lein test'
           currentBuild.result = 'SUCCESS'
         }
