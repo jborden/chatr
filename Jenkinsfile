@@ -51,19 +51,21 @@ node {
   stage('Test') {
     try {
       // sh 'scripts/install-flyway'
-      withCredentials( [string(credentialsId: 'S3_ACCESS_KEY',
-                               variable:      'S3_ACCESS_KEY'),
-                        string(credentialsId: 'S3_SECRET_KEY',
-                               variable:      'S3_SECRET_KEY'),
-                        string(credentialsId: 'S3_ENDPOINT',
-                               variable:      'S3_ENDPOINT'),
-                        string(credentialsId: 'SYSREV_DEV_KEY',
-                               variable:      'SYSREV_DEV_KEY')] ) {
-        withEnv( ['DB_NAME=datasource_test',
-                  'DB_HOST=localhost',
-                  'DB_PORT=5432',
-                  'DB_PASSWORD=""',
-                  'DB_USER=postgres'] ) {
+      withCredentials( // [string(credentialsId: 'S3_ACCESS_KEY',
+                       //         variable:      'S3_ACCESS_KEY'),
+                       //  string(credentialsId: 'S3_SECRET_KEY',
+                       //         variable:      'S3_SECRET_KEY'),
+                       //  string(credentialsId: 'S3_ENDPOINT',
+                       //         variable:      'S3_ENDPOINT'),
+                       //  string(credentialsId: 'SYSREV_DEV_KEY',
+                       //         variable:      'SYSREV_DEV_KEY')]
+	    ) {
+        withEnv( // ['DB_NAME=datasource_test',
+                 //  'DB_HOST=localhost',
+                 //  'DB_PORT=5432',
+                 //  'DB_PASSWORD=""',
+                 //  'DB_USER=postgres']
+		) {
           sh 'lein test'
           currentBuild.result = 'SUCCESS'
         }
@@ -91,37 +93,37 @@ node {
           // +- scripts/run-server-jar (based on scripts/run-server-jar.template in repo)
           // +- src/sql/schema/
           // +- target/
-          withEnv( ['DATASOURCE_HOST=sysrev.com',
-                    'DEPLOY_DIR=/home/ubuntu/datasource-deploy',
-                    'DOCKER_DIR=docker/datasource'] ) {
+          withEnv( ['CHATR_HOST=chatr.chat',
+                    'DEPLOY_DIR=/home/james/chatr-deploy',
+                    'DOCKER_DIR=docker/server'] ) {
             echo "Building database" // needs to be done
-            echo "Pushing branch to $DATASOURCE_HOST"
-            sshagent( credentials:['5e64049c-e099-4aa4-9fb0-3a126aac09db'] ) {
-              withCredentials( [string(credentialsId: 'DATASOURCE_USER',
-                                       variable:      'DATASOURCE_USER')] ) {
+            echo "Pushing branch to $CHATR_HOST"
+            sshagent( credentials:['13f7a5e9-ce84-4a26-aa6d-dc32170603a3'] ) {
+              withCredentials( [string(credentialsId: 'chatr_deploy_user',
+                                       variable:      'chatr_deploy_user')] ) {
                 echo 'Building standalone jar'
                 sh 'lein with-profile +prod uberjar'
-                echo "Transferring files to ${DATASOURCE_HOST}"
-                remoteHost =       "${DATASOURCE_USER}@${DATASOURCE_HOST}"
+                echo "Transferring files to ${CHATR_HOST}"
+                remoteHost =       "${chatr_deploy_server}@${DATASOURCE_HOST}"
                 remoteDeployPath = "${remoteHost}:${DEPLOY_DIR}"
                 remoteDockerPath = "${remoteDeployPath}/${DOCKER_DIR}"
                 sh "scp target/datasource-server.jar ${remoteDeployPath}/target"
-                sh "scp -r src/sql/schema ${remoteDeployPath}/src/sql"
-                sh "scp -r resources ${remoteDeployPath}"
-                sh "scp scripts/install-flyway ${remoteDeployPath}/scripts"
+                // sh "scp -r src/sql/schema ${remoteDeployPath}/src/sql"
+                // sh "scp -r resources ${remoteDeployPath}"
+                // sh "scp scripts/install-flyway ${remoteDeployPath}/scripts"
                 sh "scp ${DOCKER_DIR}/Dockerfile ${remoteDockerPath}"
                 sh "scp ${DOCKER_DIR}/docker-compose.yml ${remoteDockerPath}"
-                echo 'Installing and running flyway on server'
-                sh "ssh ${remoteHost} \
-                    \"cd ${DEPLOY_DIR} ; \
-                      ./scripts/install-flyway\""
-                sh "ssh ${remoteHost} \
-                    \"cd ${DEPLOY_DIR} ; \
-                      ./flyway -user=postgres -password= \
-                               -url=jdbc:postgresql://localhost:5431/datasource \
-                               -locations=filesystem:./src/sql/schema \
-                               migrate\""
-                echo "Restarting docker container on ${DATASOURCE_HOST}"
+                // echo 'Installing and running flyway on server'
+                // sh "ssh ${remoteHost} \
+                //     \"cd ${DEPLOY_DIR} ; \
+                //       ./scripts/install-flyway\""
+                // sh "ssh ${remoteHost} \
+                //     \"cd ${DEPLOY_DIR} ; \
+                //       ./flyway -user=postgres -password= \
+                //                -url=jdbc:postgresql://localhost:5431/datasource \
+                //                -locations=filesystem:./src/sql/schema \
+                //                migrate\""
+                echo "Restarting docker container on ${CHATR_HOST}"
                 sh "ssh ${remoteHost} \
                     \"cd ${DEPLOY_DIR} ; \
                       docker-compose -f ${DOCKER_DIR}/docker-compose.yml up --build -d\""
@@ -137,27 +139,27 @@ node {
           // +- scripts/run-scraper-service (based on scripts/run-scraper-service.template in repo)
           // +- ssh-keys/id_rsa.datasource
           // +- target/
-          sshagent( credentials:['id_rsa.datasource'] ) {
-            withEnv( ['WS1=insilica-ws-1.ddns.net',
-                      'USER=james',
-                      'DEPLOY_DIR=/home/james/scraper-deploy',
-                      'DOCKER_DIR=docker/scraper'] ) {
-              remoteHost =       "${USER}@${WS1}"
-              remoteDeployPath = "${remoteHost}:${DEPLOY_DIR}"
-              remoteDockerPath = "${remoteDeployPath}/${DOCKER_DIR}"
-              echo 'Building scraper uberjar'
-              sh 'lein with-profile +scraper uberjar'
-              echo "Transferring files to ${WS1}"
-              sh "scp target/scraper-service.jar ${remoteDeployPath}/target"
-              sh "scp -r resources/pubmed ${remoteDeployPath}/resources"
-              sh "scp ${DOCKER_DIR}/Dockerfile ${remoteDockerPath}"
-              sh "scp ${DOCKER_DIR}/docker-compose.yml ${remoteDockerPath}"
-              echo "Restarting docker container on ${WS1}"
-              sh "ssh ${remoteHost} \
-                  \"cd ${DEPLOY_DIR} ; \
-                    docker-compose -f ${DOCKER_DIR}/docker-compose.yml up --build -d\""
-            }
-          }
+	// sshagent( credentials:['id_rsa.datasource'] ) {
+        //     withEnv( ['WS1=insilica-ws-1.ddns.net',
+        //               'USER=james',
+        //               'DEPLOY_DIR=/home/james/scraper-deploy',
+        //               'DOCKER_DIR=docker/scraper'] ) {
+        //       remoteHost =       "${USER}@${WS1}"
+        //       remoteDeployPath = "${remoteHost}:${DEPLOY_DIR}"
+        //       remoteDockerPath = "${remoteDeployPath}/${DOCKER_DIR}"
+        //       echo 'Building scraper uberjar'
+        //       sh 'lein with-profile +scraper uberjar'
+        //       echo "Transferring files to ${WS1}"
+        //       sh "scp target/scraper-service.jar ${remoteDeployPath}/target"
+        //       sh "scp -r resources/pubmed ${remoteDeployPath}/resources"
+        //       sh "scp ${DOCKER_DIR}/Dockerfile ${remoteDockerPath}"
+        //       sh "scp ${DOCKER_DIR}/docker-compose.yml ${remoteDockerPath}"
+        //       echo "Restarting docker container on ${WS1}"
+        //       sh "ssh ${remoteHost} \
+        //           \"cd ${DEPLOY_DIR} ; \
+        //             docker-compose -f ${DOCKER_DIR}/docker-compose.yml up --build -d\""
+        //     }
+        //   }
           currentBuild.result = 'SUCCESS'
         }
       } catch (e) {

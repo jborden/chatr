@@ -9,3 +9,8 @@ services:
       - "8080:8080"
     container_name: chatr
     image: chatr/server
+    networks:
+      - discovery
+networks:
+  discovery:
+    external: true
