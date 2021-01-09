@@ -62,11 +62,11 @@ node {
                         //        variable:      'SYSREV_DEV_KEY')
 		]
 	    ) {
-        withEnv( // ['DB_NAME=datasource_test',
-                 //  'DB_HOST=localhost',
-                 //  'DB_PORT=5432',
-                 //  'DB_PASSWORD=""',
-                 //  'DB_USER=postgres']
+        withEnv( ['DB_NAME=datasource_test',
+                  'DB_HOST=localhost',
+                  'DB_PORT=5432',
+                  'DB_PASSWORD=""',
+                  'DB_USER=postgres']
 		) {
 		    echo "In Test"
           sh 'lein test'
