@@ -1,14 +1,14 @@
 (ns chatr.handler-test
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
-            [chatr.handler :refer :all]))
+            [chatr.handler :refer [chatr]]))
 
 (deftest test-app
   (testing "main route"
-    (let [response (app (mock/request :get "/"))]
+    (let [response (chatr (mock/request :get "/"))]
       (is (= (:status response) 200))
       (is (= (:body response) "Hello World"))))
 
   (testing "not-found route"
-    (let [response (app (mock/request :get "/invalid"))]
+    (let [response (chatr (mock/request :get "/invalid"))]
       (is (= (:status response) 404)))))

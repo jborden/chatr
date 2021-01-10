@@ -6,7 +6,8 @@
                  [aleph "0.4.7-alpha7"]
                  [compojure "1.6.1"]
                  [environ "1.2.0"]
-                 [ring/ring-defaults "0.3.2"]]
+                 [ring/ring-defaults "0.3.2"]
+                 [ring/ring-mock "0.4.0"]]
   :repl-options {:init-ns chatr.dev
                  :init (dev-init)}
   :source-paths ["src/clj"]
