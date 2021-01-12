@@ -110,7 +110,7 @@ node {
                 remoteHost =       "${chatr_deploy_user}@${CHATR_HOST}"
                 remoteDeployPath = "${remoteHost}:${DEPLOY_DIR}"
                 remoteDockerPath = "${remoteDeployPath}/${DOCKER_DIR}"
-                sh "scp target/datasource-server.jar ${remoteDeployPath}/target"
+                sh "scp target/chatr-server.jar ${remoteDeployPath}/target"
                 // sh "scp -r src/sql/schema ${remoteDeployPath}/src/sql"
                 // sh "scp -r resources ${remoteDeployPath}"
                 // sh "scp scripts/install-flyway ${remoteDeployPath}/scripts"
