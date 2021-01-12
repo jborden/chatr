@@ -4,7 +4,7 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
 (defroutes app-routes
-  (GET "/" [] "<<chatr>> Speak Freely <<chatr>>")
+  (GET "/" [] "Chatr - Speak Freely")
   (route/not-found "Not Found"))
 
 (def chatr
