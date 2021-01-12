@@ -7,7 +7,7 @@
   (testing "main route"
     (let [response (chatr (mock/request :get "/"))]
       (is (= (:status response) 200))
-      (is (= (:body response) "<<chatr>> Speak Freely <<chatr>>"))))
+      (is (= (:body response) "Chatr - Speak Freely"))))
 
   (testing "not-found route"
     (let [response (chatr (mock/request :get "/invalid"))]
