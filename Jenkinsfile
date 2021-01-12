@@ -101,7 +101,7 @@ node {
                     'DOCKER_DIR=docker/server'] ) {
             echo "Building database" // needs to be done
             echo "Pushing branch to $CHATR_HOST"
-            sshagent( credentials:['13f7a5e9-ce84-4a26-aa6d-dc32170603a3'] ) {
+            sshagent( credentials:['3ef3ac81-6791-4c10-b532-0a5bb20e83ed'] ) {
               withCredentials( [string(credentialsId: 'chatr_deploy_user',
                                        variable:      'chatr_deploy_user')] ) {
                 echo 'Building standalone jar'
