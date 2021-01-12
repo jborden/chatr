@@ -107,7 +107,7 @@ node {
                 echo 'Building standalone jar'
                 sh 'lein with-profile +prod uberjar'
                 echo "Transferring files to ${CHATR_HOST}"
-                remoteHost =       "${chatr_deploy_user}@${DATASOURCE_HOST}"
+                remoteHost =       "${chatr_deploy_user}@${CHATR_HOST}"
                 remoteDeployPath = "${remoteHost}:${DEPLOY_DIR}"
                 remoteDockerPath = "${remoteDeployPath}/${DOCKER_DIR}"
                 sh "scp target/datasource-server.jar ${remoteDeployPath}/target"
