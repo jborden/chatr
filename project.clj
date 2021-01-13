@@ -6,6 +6,9 @@
                  [aleph "0.4.7-alpha7"]
                  [compojure "1.6.1"]
                  [environ "1.2.0"]
+                 [hiccup "2.0.0-alpha2"]
+                 [buddy/buddy-auth "2.2.0"]
+                 [buddy/buddy-core "1.8.0"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-mock "0.4.0"]]
   :repl-options {:init-ns chatr.dev

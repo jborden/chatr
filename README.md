@@ -38,8 +38,10 @@ bring it back down
 1. Compile the uberjar
 
 
-
+# Assets
+## Logo
+https://www.freelogodesign.org/preview?lang=en&name=chatr&logo=bac2fefa-a2f2-4a46-914e-7468f4f74398
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2021 James Borden
