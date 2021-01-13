@@ -112,7 +112,7 @@ node {
                 remoteDockerPath = "${remoteDeployPath}/${DOCKER_DIR}"
                 sh "scp target/chatr-server.jar ${remoteDeployPath}/target"
                 // sh "scp -r src/sql/schema ${remoteDeployPath}/src/sql"
-                // sh "scp -r resources ${remoteDeployPath}"
+                sh "scp -r resources ${remoteDeployPath}"
                 // sh "scp scripts/install-flyway ${remoteDeployPath}/scripts"
                 sh "scp ${DOCKER_DIR}/Dockerfile ${remoteDockerPath}"
                 sh "scp ${DOCKER_DIR}/docker-compose.yml ${remoteDockerPath}"
