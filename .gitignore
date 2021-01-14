@@ -16,3 +16,7 @@ pom.xml.asc
 *.org
 id_rsa
 id_rsa.pub
+
+/client/node_modules
+/resources/public/js
+/client/.shadow-cljs/

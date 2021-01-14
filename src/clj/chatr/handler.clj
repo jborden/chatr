@@ -2,7 +2,8 @@
   (:require [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.core.codecs :as codecs]
             [buddy.core.nonce :as nonce]
-            [chatr.html :refer [Login Root]]
+            [chatr.html :refer [Login]]
+            [chatr.chatroom :refer [ChatRoom]]
             [clojure.walk :as walk]
             [compojure.core :refer [GET POST defroutes]]
             [compojure.route :as route]
@@ -59,9 +60,9 @@
     (->
      (response/redirect "/")
      (response/set-cookie "token" (random-token) {:max-age max-age
-                                                      :http-only true
-                                                      :same-site :strict
-                                                      :path "/"})
+                                                  :http-only true
+                                                  :same-site :strict
+                                                  :path "/"})
      (response/set-cookie "chatrID" chatrID {:max-age max-age
                                              :http-only true
                                              :same-site :strict
@@ -69,13 +70,7 @@
 
 (defroutes app-routes
   (GET "/login" request (Login request))
-  (GET "/" request
-       (let [body (Root [:div
-                         [:div {:id "app"}]
-                         [:script "chatr.core.init_BANG_()"]
-                         [:h1 "Hi " (get-in request [:cookies "chatrID" :value])]])
-             resp (response/response body)]
-         (response/header resp "Content-Type" "text/html; charset=utf-8")))
+  (GET "/" request (ChatRoom request))
   (GET "/login" request (Login request))
   (POST "/login" request (handle-login request))
   (GET "/logout" [] (clear-cookie))
