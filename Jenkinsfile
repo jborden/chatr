@@ -67,8 +67,8 @@ node {
                   'DB_PORT=5432',
                   'DB_PASSWORD=""',
                   'DB_USER=postgres']
-		) {
-		    echo "In Test"
+				) {
+					sh 'cd client ; npm install ; shadow-cljs release :prod ; cd ..'
           sh 'lein test'
           currentBuild.result = 'SUCCESS'
         }
